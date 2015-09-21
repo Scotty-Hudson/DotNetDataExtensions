@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetDataExtensions", "DotNetDataExtensions\DotNetDataExtensions.csproj", "{C01718E0-D9BE-4DD1-ADEA-DAA6056575AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetDataExtensionsTests", "DotNetDataExtensionsTests\DotNetDataExtensionsTests.csproj", "{8ECDE8FC-7D14-4715-9194-2949D2EFDAA6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C01718E0-D9BE-4DD1-ADEA-DAA6056575AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C01718E0-D9BE-4DD1-ADEA-DAA6056575AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C01718E0-D9BE-4DD1-ADEA-DAA6056575AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C01718E0-D9BE-4DD1-ADEA-DAA6056575AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ECDE8FC-7D14-4715-9194-2949D2EFDAA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ECDE8FC-7D14-4715-9194-2949D2EFDAA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ECDE8FC-7D14-4715-9194-2949D2EFDAA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ECDE8FC-7D14-4715-9194-2949D2EFDAA6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
