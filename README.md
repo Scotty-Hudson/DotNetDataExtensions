@@ -69,7 +69,7 @@ var customerId = row.ConvertTo("CustomerId", 0);
 
 ### Dependancies:
 
-These DataExtension depend on the NuGet package *FastMember*. 
+These DataExtensions depend on the NuGet package *FastMember*. 
 
 The unit tests are using the NUnit framework.
 
