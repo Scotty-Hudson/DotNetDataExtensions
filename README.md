@@ -9,7 +9,7 @@ Any properties in the POCO that are not in the IDataReader, DataTable, or DataRo
 One can override a property's default value by passing in a default instance of the POCO intialized with default values set.
 
 **Efficiency:**
-These extensions use the [FastMember] (https://www.nuget.org/packages/FastMember) NuGet package to iterate through properties using emitted IL instead of reflection, which is considerably faster. We also use a [compiled lambda expression] (http://stackoverflow.com/questions/6582259/fast-creation-of-objects-instead-of-activator-createinstancetype?rq=1) taken from StackOverflow (see answer 17) to create objects instead of using Activator.CreateInstance(). This is very close to the speed of using the new operator.
+These extensions use the [FastMember] (https://www.nuget.org/packages/FastMember) NuGet package to iterate through properties using emitted IL instead of reflection, which is considerably faster. We also use a [compiled lambda expression] (http://stackoverflow.com/questions/6582259/fast-creation-of-objects-instead-of-activator-createinstancetype?rq=1) taken from stack overflow (see answer 17) to create objects instead of using Activator.CreateInstance(). This is very close to the speed of using the new operator.
 
 **Examples:**
 
