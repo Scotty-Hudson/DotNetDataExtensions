@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 using FastMember;
 
 // These extensions require the third party FastMember.dll that
-// uses IL instead of reflection for significant performance gains.
+// uses emitted IL instead of reflection for significant performance gains.
 // Use the NuGet package.
 namespace DataExtensions
 {
@@ -33,9 +33,19 @@ namespace DataExtensions
 
     public static class DataExtensionMethods
     {
-        public static bool HasDefaultConstructor(this Type t)
+        internal static bool HasDefaultConstructor(this Type t)
         {
             return t.IsValueType || t.GetConstructor(Type.EmptyTypes) != null;
+        }
+
+        private static T ClonePoco<T>(TypeAccessor accessor, T defaultEntity)
+        {
+            // Copy the values of the POCO passed in to a new POCO
+            var entity = New<T>.Instance();
+            accessor.GetMembers()
+                    .Select(c => accessor[entity, c.Name] = accessor[defaultEntity, c.Name]);
+
+            return entity;
         }
 
         public static T ConvertTo<T>(this DataRow row, string columnName)
@@ -51,8 +61,7 @@ namespace DataExtensions
 
         public static T MapTo<T>(this DataRow row) where T : class
         {
-            var entity = New<T>.Instance();
-            return row.MapTo(entity);
+            return row.MapTo(New<T>.Instance());
         }
 
         public static T MapTo<T>(this DataRow row, T defaultEntity) where T : class
@@ -69,13 +78,14 @@ namespace DataExtensions
                     // Most of the time, I prefer empty strings over nulls
                     if (prop.Type == typeof(string))
                         accessor[defaultEntity, prop.Name] = string.Empty;
+
                     continue;
                 }
 
                 // Nullable fields in the POCO should be null if the value in the DataRow is null
                 var t = Nullable.GetUnderlyingType(prop.Type) ?? prop.Type;
                 var safe = row.IsNull(prop.Name)
-                   ? null
+                    ? null
                     : Convert.ChangeType(row[prop.Name], t, CultureInfo.CurrentCulture);
                 accessor[defaultEntity, prop.Name] = safe;
             }
@@ -84,11 +94,7 @@ namespace DataExtensions
 
         public static List<T> MapTo<T>(this DataTable table) where T : class
         {
-            var entityList = new List<T>();
-            entityList.AddRange(table.Rows.Cast<DataRow>()
-                                     .Select(row => new { row, entity = New<T>.Instance() })
-                                     .Select(@t => MapTo(@t.row, @t.entity)));
-            return entityList;
+            return table.MapTo(New<T>.Instance());
         }
 
         public static List<T> MapTo<T>(this DataTable table, T defaultEntity) where T : class
@@ -97,21 +103,15 @@ namespace DataExtensions
             var accessor = TypeAccessor.Create(typeof(T));
 
             var entityList = new List<T>();
-            foreach (DataRow row in table.Rows)
-            {
-                var entity = New<T>.Instance();
-                foreach (var prop in accessor.GetMembers())
-                    accessor[entity, prop.Name] = accessor[defaultEntity, prop.Name];
-
-                entityList.Add(row.MapTo(entity));
-            }
+            entityList.AddRange(table.Rows.Cast<DataRow>()
+                                          .Select(row => new { row, entity = ClonePoco(accessor, defaultEntity) })
+                                          .Select(@t => MapTo(@t.row, @t.entity)));
             return entityList;
         }
 
         public static List<T> MapTo<T>(this IDataReader reader) where T : class
         {
-            var entity = New<T>.Instance();
-            return reader.MapTo(entity);
+            return reader.MapTo(New<T>.Instance());
         }
 
         public static List<T> MapTo<T>(this IDataReader reader, T defaultEntity) where T : class
