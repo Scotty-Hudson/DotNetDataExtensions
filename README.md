@@ -64,7 +64,7 @@ or
 var customer = row.MapTo( new Customer { Zip = 0 });
 ```
 
-or to return nulls instead of empty strings for null strings in the DataTable
+or to return nulls instead of empty strings for null strings in the DataRow
 
 ```c#
 var customerList = row.MapTo(new Customer { FirstName="Please", 
