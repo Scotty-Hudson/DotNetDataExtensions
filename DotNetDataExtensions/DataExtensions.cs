@@ -49,7 +49,7 @@ namespace DataExtensions
             // Copy the values of the POCO passed in to a new POCO
             var entity = New<T>.Instance();
             accessor.GetMembers()
-                    .Select(c => accessor[entity, c.Name] = accessor[defaultEntity, c.Name]);
+                    .ForEach(c => accessor[entity, c.Name] = accessor[defaultEntity, c.Name]);
             return entity;
         }
 
