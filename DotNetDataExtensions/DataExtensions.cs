@@ -40,7 +40,7 @@ namespace DataExtensions
 
         private static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
-            foreach (T element in source)
+            foreach (var element in source)
                 action?.Invoke(element);
         }
 
@@ -150,7 +150,9 @@ namespace DataExtensions
 
                 // Null strings in the POCO should be set to an empty string
                 if (nullStringsToEmpty)
-                    entityList.Add(NullStringsToEmpty(accessor, entity));
+                    entity = NullStringsToEmpty(accessor, entity);
+
+                entityList.Add(entity);
             }
             return entityList;
         }

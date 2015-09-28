@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using NUnit.Framework;
 using DataExtensions;
@@ -24,7 +21,7 @@ namespace DotNetDataExtensionsTests
             using (var reader = _dtTest.CreateDataReader())
             {
                 var customerList = reader.MapTo<Customer>();
-                Assert.That(customerList.Count(), Is.EqualTo(3));
+                Assert.That(customerList.Count, Is.EqualTo(3));
             }
         }
 
@@ -32,7 +29,7 @@ namespace DotNetDataExtensionsTests
         public void DataTable_ReturnsCorrectListCount()
         {
             var customerList = _dtTest.MapTo<Customer>();
-            Assert.That(customerList.Count(), Is.EqualTo(3));
+            Assert.That(customerList.Count, Is.EqualTo(3));
         }
 
         [TestCase]
@@ -194,9 +191,36 @@ namespace DotNetDataExtensionsTests
             Assert.That(cust.PhoneNumber, Is.EqualTo(String.Empty));
         }
 
+        [TestCase]
+        public void DataReader_DoesDBNullReturnCorrectlyForStringWithNullOverrideTurnedOff()
+        {
+            using (var reader = _dtTest.CreateDataReader())
+            {
+                var customerList = reader.MapTo<Customer>(false);
+                var cust = customerList.First(c => c.CustomerId == 3);
+                Assert.IsNull(cust.PhoneNumber);
+            }
+        }
+
+        [TestCase]
+        public void DataTable_DoesDBNullReturnCorrectlyForStringWithNullOverrideTurnedOff()
+        {
+            var customerList = _dtTest.MapTo<Customer>(false);
+            var cust = customerList.First(c => c.CustomerId == 3);
+            Assert.IsNull(cust.PhoneNumber);
+        }
+
+        [TestCase]
+        public void DataRow_DoesDBNullReturnCorrectlyForStringWithNullOverrideTurnedOff()
+        {
+            var dr = _dtTest.Select("CustomerId = 3");
+            var cust = dr[0].MapTo<Customer>(false);
+            Assert.IsNull(cust.PhoneNumber);
+        }
+
         private static DataTable CreateDataTable()
         {
-            var c = new Customer();
+            Customer c;
             var dt = new DataTable();
 
             dt.Columns.Add(nameof(c.CustomerId), typeof(long));
