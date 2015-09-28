@@ -8,14 +8,14 @@ using NUnit.Framework;
 using DataExtensions;
 
 namespace DotNetDataExtensionsTests
-{ 
+{
     public class UnitTests
     {
-        private DataTable _dtTest;
-        
+        private readonly DataTable _dtTest;
+
         public UnitTests()
         {
-            _dtTest = CreateDataTable();            
+            _dtTest = CreateDataTable();
         }
 
         [TestCase]
@@ -167,6 +167,33 @@ namespace DotNetDataExtensionsTests
             Assert.That(cust.Zip, Is.EqualTo(0));
         }
 
+        [TestCase]
+        public void DataReader_DoesDBNullReturnCorrectlyForString()
+        {
+            using (var reader = _dtTest.CreateDataReader())
+            {
+                var customerList = reader.MapTo<Customer>();
+                var cust = customerList.First(c => c.CustomerId == 3);
+                Assert.That(cust.PhoneNumber, Is.EqualTo(String.Empty));
+            }
+        }
+
+        [TestCase]
+        public void DataTable_DoesDBNullReturnCorrectlyForString()
+        {
+            var customerList = _dtTest.MapTo<Customer>();
+            var cust = customerList.First(c => c.CustomerId == 3);
+            Assert.That(cust.PhoneNumber, Is.EqualTo(String.Empty));
+        }
+
+        [TestCase]
+        public void DataRow_DoesDBNullReturnCorrectlyString()
+        {
+            var dr = _dtTest.Select("CustomerId = 3");
+            var cust = dr[0].MapTo<Customer>();
+            Assert.That(cust.PhoneNumber, Is.EqualTo(String.Empty));
+        }
+
         private static DataTable CreateDataTable()
         {
             var c = new Customer();
@@ -237,5 +264,5 @@ namespace DotNetDataExtensionsTests
         public string State { get; set; }
         public int Zip { get; set; }
         public decimal? RewardsPoints { get; set; }
-    }       
+    }
 }

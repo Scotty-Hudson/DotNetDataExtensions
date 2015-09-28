@@ -38,13 +38,28 @@ namespace DataExtensions
             return t.IsValueType || t.GetConstructor(Type.EmptyTypes) != null;
         }
 
-        private static T ClonePoco<T>(TypeAccessor accessor, T defaultEntity)
+        private static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            foreach (T element in source)
+                action?.Invoke(element);
+        }
+
+        private static T ClonePoco<T>(TypeAccessor accessor, T defaultEntity) where T : class
         {
             // Copy the values of the POCO passed in to a new POCO
             var entity = New<T>.Instance();
             accessor.GetMembers()
                     .Select(c => accessor[entity, c.Name] = accessor[defaultEntity, c.Name]);
+            return entity;
+        }
 
+        private static T NullStringsToEmpty<T>(TypeAccessor accessor, T entity) where T : class
+        {
+            // Null strings in the POCO should be set to an empty string
+            accessor.GetMembers()
+                    .Where(p => p.Type == typeof(string))
+                    .Where(p => accessor[entity, p.Name] == null)
+                    .ForEach(prop => accessor[entity, prop.Name] = string.Empty);
             return entity;
         }
 
@@ -59,67 +74,61 @@ namespace DataExtensions
             return row.ConvertTo<T>(columnName);
         }
 
-        public static T MapTo<T>(this DataRow row) where T : class
+        public static T MapTo<T>(this DataRow row, bool nullStringsToEmpty = true) where T : class
         {
-            return row.MapTo(New<T>.Instance());
+            return row.MapTo(New<T>.Instance(), nullStringsToEmpty);
         }
 
-        public static T MapTo<T>(this DataRow row, T defaultEntity) where T : class
+        public static T MapTo<T>(this DataRow row, T defaultEntity, bool nullStringsToEmpty = true) where T : class
         {
-            // Third party from nuget - faster than reflection
+            // Third party from Nuget - faster than reflection
             var accessor = TypeAccessor.Create(typeof(T));
 
-            foreach (var prop in accessor.GetMembers())
-            {
-                // We only want to map to properties in our entity with non null values
-                // and return the existing object values for the rest.
-                if (!row.Table.Columns.Contains(prop.Name) || row[prop.Name] is DBNull)
-                {
-                    // Most of the time, I prefer empty strings over nulls
-                    if (prop.Type == typeof(string))
-                        accessor[defaultEntity, prop.Name] = string.Empty;
+            // We only want to map to properties in our entity with non null values
+            // and return the existing object values for the rest.
+            // Properly handle nullable types in the POCO when converting the data type
+            accessor.GetMembers()
+                    .Where(p => row.Table.Columns.Contains(p.Name))
+                    .Where(p => !row.IsNull(p.Name))
+                    .ForEach(prop => accessor[defaultEntity, prop.Name]
+                        = Convert.ChangeType(row[prop.Name],
+                            Nullable.GetUnderlyingType(prop.Type) ?? prop.Type, CultureInfo.CurrentCulture));
 
-                    continue;
-                }
+            // Null strings in the POCO should be set to an empty string
+            if (nullStringsToEmpty)
+                defaultEntity = NullStringsToEmpty(accessor, defaultEntity);
 
-                // Nullable fields in the POCO should be null if the value in the DataRow is null
-                var t = Nullable.GetUnderlyingType(prop.Type) ?? prop.Type;
-                var safe = row.IsNull(prop.Name)
-                    ? null
-                    : Convert.ChangeType(row[prop.Name], t, CultureInfo.CurrentCulture);
-                accessor[defaultEntity, prop.Name] = safe;
-            }
             return defaultEntity;
         }
 
-        public static List<T> MapTo<T>(this DataTable table) where T : class
+        public static List<T> MapTo<T>(this DataTable table, bool nullStringsToEmpty = true) where T : class
         {
-            return table.MapTo(New<T>.Instance());
+            return table.MapTo(New<T>.Instance(), nullStringsToEmpty);
         }
 
-        public static List<T> MapTo<T>(this DataTable table, T defaultEntity) where T : class
+        public static List<T> MapTo<T>(this DataTable table, T defaultEntity, bool nullStringsToEmpty = true) where T : class
         {
             // Third party from nuget - faster than reflection
             var accessor = TypeAccessor.Create(typeof(T));
 
             var entityList = new List<T>();
             entityList.AddRange(table.Rows.Cast<DataRow>()
-                                          .Select(row => new { row, entity = ClonePoco(accessor, defaultEntity) })
-                                          .Select(@t => MapTo(@t.row, @t.entity)));
+                                          .Select(row => new { row, entity = ClonePoco(accessor, defaultEntity), nullStringsToEmpty })
+                                          .Select(@t => MapTo(@t.row, @t.entity, @t.nullStringsToEmpty)));
             return entityList;
         }
 
-        public static List<T> MapTo<T>(this IDataReader reader) where T : class
+        public static List<T> MapTo<T>(this IDataReader reader, bool nullStringsToEmpty = true) where T : class
         {
-            return reader.MapTo(New<T>.Instance());
+            return reader.MapTo(New<T>.Instance(), nullStringsToEmpty);
         }
 
-        public static List<T> MapTo<T>(this IDataReader reader, T defaultEntity) where T : class
+        public static List<T> MapTo<T>(this IDataReader reader, T defaultEntity, bool nullStringsToEmpty = true) where T : class
         {
             // Third party from nuget - faster than reflection
             var accessor = TypeAccessor.Create(typeof(T));
 
-            // Cache the field names in the reader for efficiency
+            // Cache the field names in the reader for use in our while loop for efficiency
             var readerFieldLookup = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase); // store name and ordinal
             for (var i = 0; i < reader.FieldCount; i++)
                 readerFieldLookup.Add(reader.GetName(i), i);
@@ -128,31 +137,20 @@ namespace DataExtensions
             var entityList = new List<T>();
             while (reader.Read())
             {
-                var entity = New<T>.Instance();
-                foreach (var prop in accessor.GetMembers())
-                {
-                    // Set our new object of type T's value for this property to the value of the instance passed in.
-                    accessor[entity, prop.Name] = accessor[defaultEntity, prop.Name];
+                var entity = ClonePoco(accessor, defaultEntity);
+                // We only want to map to properties in our entity with non null values
+                // and return the existing object values for the rest.
+                // Properly handle nullable types in the POCO when converting the data type
+                accessor.GetMembers()
+                        .Where(p => readerFieldLookup.ContainsKey(p.Name))
+                        .Where(p => !reader.IsDBNull(readerFieldLookup[p.Name]))
+                        .ForEach(p => accessor[entity, p.Name]
+                            = Convert.ChangeType(reader.GetValue(readerFieldLookup[p.Name]),
+                                Nullable.GetUnderlyingType(p.Type) ?? p.Type, CultureInfo.CurrentCulture));
 
-                    // We only want to map to properties in our entity with non null values
-                    // and return the existing object's values for the rest.
-                    if (!readerFieldLookup.ContainsKey(prop.Name) || reader[prop.Name] is DBNull)
-                    {
-                        // Most of the time, I prefer empty strings over nulls
-                        if (prop.Type == typeof(string))
-                            accessor[defaultEntity, prop.Name] = string.Empty;
-
-                        continue;
-                    }
-
-                    // Nullable fields in the POCO should be null if the value in the DataRow is null
-                    var t = Nullable.GetUnderlyingType(prop.Type) ?? prop.Type;
-                    var safe = reader.IsDBNull(readerFieldLookup[prop.Name])
-                        ? null
-                        : Convert.ChangeType(reader.GetValue(readerFieldLookup[prop.Name]), t, CultureInfo.CurrentCulture);
-                    accessor[entity, prop.Name] = safe;
-                }
-                entityList.Add(entity);
+                // Null strings in the POCO should be set to an empty string
+                if (nullStringsToEmpty)
+                    entityList.Add(NullStringsToEmpty(accessor, entity));
             }
             return entityList;
         }
