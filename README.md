@@ -28,12 +28,12 @@ var customerList = reader.MapTo(new Customer { Zip = 0 });
 *DataTable:*
 
 ```c#
-var customerList = dataTable.MapTo();
+var customerList = dataTable.MapTo<Customer>();
 ```
 
 or
 
-```
+```c#
 var customerList = dataTable.MapTo(new Customer { FirstName="Please", 
 												  LastName = "Enter",
                                                   Zip=0 
@@ -47,7 +47,7 @@ var customer = row.MapTo<Customer>();
 ```
 or
 
-```
+```c#
 var customer = row.MapTo( new Customer { Zip = 0 });
 ```
 
@@ -59,11 +59,12 @@ var customer = row.MapTo( new Customer { Zip = 0 });
 
 *DataRow:*
 
-```
+```c#
 var customerId = row.ConvertTo<long>("CustomerId");
 ```
 or
-```
+
+```c#
 var customerId = row.ConvertTo("CustomerId", 0);
 ```
 
