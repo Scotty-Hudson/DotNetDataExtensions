@@ -25,6 +25,12 @@ or
 var customerList = reader.MapTo(new Customer { Zip = 0 });
 ```
 
+or to return nulls instead of empty strings for null strings in the IDataReader
+
+```c#
+var customerList = reader.MapTo(new Customer { Zip = 0 }, false);
+```
+
 *DataTable:*
 
 ```c#
@@ -40,15 +46,31 @@ var customerList = dataTable.MapTo(new Customer { FirstName="Please",
                                                  });
 ```
 
+or to return nulls instead of empty strings for null strings in the DataTable
+
+```c#
+var customerList = dataTable.MapTo<Customer>(false);
+```
+
 *DataRow:*
 
 ```c#
 var customer = row.MapTo<Customer>();
 ```
+
 or
 
 ```c#
 var customer = row.MapTo( new Customer { Zip = 0 });
+```
+
+or to return nulls instead of empty strings for null strings in the DataTable
+
+```c#
+var customerList = row.MapTo(new Customer { FirstName="Please", 
+											LastName = "Enter",
+                                            Zip=0 
+                                          }, false);
 ```
 
 ## ConvertTo Extension
