@@ -90,7 +90,7 @@ namespace DotNetDataExtensionsTests
             {
                 var customerList = reader.MapTo<Customer>();
                 var cust = customerList.First(c => c.CustomerId == 2);
-                Assert.That(cust.RewardsPoints, Is.EqualTo(null));
+                Assert.IsNull(cust.RewardsPoints);
             }
         }
 
@@ -99,7 +99,7 @@ namespace DotNetDataExtensionsTests
         {
             var customerList = _dtTest.MapTo<Customer>();
             var cust = customerList.First(c => c.CustomerId == 2);
-            Assert.That(cust.RewardsPoints, Is.EqualTo(null));
+            Assert.IsNull(cust.RewardsPoints);
         }
 
         [TestCase]
@@ -107,7 +107,7 @@ namespace DotNetDataExtensionsTests
         {
             var dr = _dtTest.Select("CustomerId = 2");
             var cust = dr[0].MapTo<Customer>();
-            Assert.That(cust.RewardsPoints, Is.EqualTo(null));
+            Assert.IsNull(cust.RewardsPoints);
         }
 
         [TestCase]
@@ -171,7 +171,7 @@ namespace DotNetDataExtensionsTests
             {
                 var customerList = reader.MapTo<Customer>();
                 var cust = customerList.First(c => c.CustomerId == 3);
-                Assert.That(cust.PhoneNumber, Is.EqualTo(String.Empty));
+                Assert.That(cust.PhoneNumber, Is.EqualTo(string.Empty));
             }
         }
 
@@ -180,7 +180,7 @@ namespace DotNetDataExtensionsTests
         {
             var customerList = _dtTest.MapTo<Customer>();
             var cust = customerList.First(c => c.CustomerId == 3);
-            Assert.That(cust.PhoneNumber, Is.EqualTo(String.Empty));
+            Assert.That(cust.PhoneNumber, Is.EqualTo(string.Empty));
         }
 
         [TestCase]
@@ -188,7 +188,7 @@ namespace DotNetDataExtensionsTests
         {
             var dr = _dtTest.Select("CustomerId = 3");
             var cust = dr[0].MapTo<Customer>();
-            Assert.That(cust.PhoneNumber, Is.EqualTo(String.Empty));
+            Assert.That(cust.PhoneNumber, Is.EqualTo(string.Empty));
         }
 
         [TestCase]
