@@ -4,7 +4,7 @@
 
 **Description:** Maps a IDataReader or DataTable to a list of _plain old CLR objects_. It will also map a DataRow to a single plain old CLR object. The column names to be mapped to the POCO must match (case insensitive) the names of the properties in the POCO. 
 
-Any properties in the POCO that are DBNull or do not exist in the IDataReader, DataTable, or DataRow the POCO being mapped to; will be intialized to the default value of the property's .Net data type, with the exception of a string, which will be intailized as an empty string (can be overridden with an optional argument). Any columns in the IDataReader, DataTable, or DataRow that are not in the POCO will be ignored by the _MapTo_ extension method.
+Any properties in the POCO that are DBNull or do not exist in the IDataReader, DataTable, or DataRow the POCO is being mapped to; will be intialized to the default value of the property's .Net data type, with the exception of a string, which will be intailized as an empty string (can be overridden with an optional argument). Any columns in the IDataReader, DataTable, or DataRow that are not in the POCO will be ignored by the _MapTo_ extension method.
 
 One can override a property's default value by passing in a default instance of the POCO intialized with default values set. For instance, you may want to override a null integer value from the data source to a -1 in your POCO.
 
