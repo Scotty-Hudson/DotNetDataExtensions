@@ -2,11 +2,11 @@
 
 ## MapTo Extension
 
-**Description:** Maps a IDataReader or DataTable to a list of plain old CLR objects. It will also map a DataRow to a plain old CLR object. The column names to be mapped to the POCO must match (case insensitive) the names of the properties in the POCO. 
+**Description:** Maps a IDataReader or DataTable to a list of _plain old CLR objects_. It will also map a DataRow to a plain old CLR object. The column names to be mapped to the POCO must match (case insensitive) the names of the properties in the POCO. 
 
-Any properties in the POCO that are not in the IDataReader, DataTable, or DataRow or DBNull will be intialized to the property's default value for that particular data type with the exception of a string which will be intailized as an empty string (can be overridden with an optional argument). Any columns in the IDataReader, DataTable, or DataRow that are not in the POCO will be ignored. 
+Any properties in the POCO that are DBNull or do not exist in the IDataReader, DataTable, or DataRow the POCO being mapped to; will be intialized to the default value of the properties .Net data type, with the exception of a string, which will be intailized as an empty string (can be overridden with an optional argument). Any columns in the IDataReader, DataTable, or DataRow that are not in the POCO will be ignored. 
 
-One can override a property's default value by passing in a default instance of the POCO intialized with default values set.
+One can override a property's default value by passing in a default instance of the POCO intialized with default values set. For instance, you may want to override a null integer value from the data source to a -1 in your POCO.
 
 **Efficiency:**
 These extensions use the [FastMember] (https://www.nuget.org/packages/FastMember) NuGet package to iterate through properties using emitted IL instead of reflection, which is considerably faster. The extensions also use a [compiled lambda expression] (http://stackoverflow.com/questions/6582259/fast-creation-of-objects-instead-of-activator-createinstancetype?rq=1) taken from stack overflow (see answer 17) to create objects instead of using Activator.CreateInstance(). This is very close to the speed of using the new operator.
