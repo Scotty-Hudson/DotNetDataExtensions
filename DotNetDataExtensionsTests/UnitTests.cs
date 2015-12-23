@@ -12,7 +12,22 @@ namespace DotNetDataExtensionsTests
 
         public UnitTests()
         {
-            _dtTest = CreateDataTable();
+            _dtTest = new DataTable();
+            _dtTest.ReadXml(@"..\..\TestData.xml");
+        }
+
+        private void TestAllCustomerPropertiesById(Customer cust)
+        {
+            var dr = _dtTest.Select($"{nameof(cust.CustomerId)} = {cust.CustomerId}")[0];
+            Assert.That(cust.FirstName, Is.EqualTo(dr.ConvertTo<string>(nameof(cust.FirstName))));
+            Assert.That(cust.LastName, Is.EqualTo(dr.ConvertTo<string>(nameof(cust.LastName))));
+            Assert.That(cust.Email, Is.EqualTo(dr.ConvertTo<string>(nameof(cust.Email))));
+            Assert.That(cust.PhoneNumber, Is.EqualTo(dr.ConvertTo<string>(nameof(cust.PhoneNumber))));
+            Assert.That(cust.Address, Is.EqualTo(dr.ConvertTo<string>(nameof(cust.Address))));
+            Assert.That(cust.City, Is.EqualTo(dr.ConvertTo<string>(nameof(cust.City))));
+            Assert.That(cust.State, Is.EqualTo(dr.ConvertTo<string>(nameof(cust.State))));
+            Assert.That(cust.Zip, Is.EqualTo(dr.ConvertTo<int>(nameof(cust.Zip))));
+            Assert.That(cust.RewardsPoints, Is.EqualTo((Nullable<decimal>)dr[nameof(cust.RewardsPoints)]));
         }
 
         [TestCase]
@@ -39,32 +54,16 @@ namespace DotNetDataExtensionsTests
             {
                 var customerList = reader.MapTo<Customer>();
                 var cust = customerList.First(c => c.CustomerId == 1);
-                Assert.That(cust.FirstName, Is.EqualTo("John"));
-                Assert.That(cust.LastName, Is.EqualTo("Doe"));
-                Assert.That(cust.Email, Is.EqualTo("johnDoe@maxmail.com"));
-                Assert.That(cust.PhoneNumber, Is.EqualTo("345-231-9234"));
-                Assert.That(cust.Address, Is.EqualTo("312 Brackish Rd"));
-                Assert.That(cust.City, Is.EqualTo("Boston"));
-                Assert.That(cust.State, Is.EqualTo("MA"));
-                Assert.That(cust.Zip, Is.EqualTo(34567));
-                Assert.That(cust.RewardsPoints, Is.EqualTo(23.3M));
+                TestAllCustomerPropertiesById(cust);
             }
         }
-
+        
         [TestCase]
         public void DataTable_AreFieldsCorrectInFirstRecord()
         {
             var customerList = _dtTest.MapTo<Customer>();
             var cust = customerList.First(c => c.CustomerId == 1);
-            Assert.That(cust.FirstName, Is.EqualTo("John"));
-            Assert.That(cust.LastName, Is.EqualTo("Doe"));
-            Assert.That(cust.Email, Is.EqualTo("johnDoe@maxmail.com"));
-            Assert.That(cust.PhoneNumber, Is.EqualTo("345-231-9234"));
-            Assert.That(cust.Address, Is.EqualTo("312 Brackish Rd"));
-            Assert.That(cust.City, Is.EqualTo("Boston"));
-            Assert.That(cust.State, Is.EqualTo("MA"));
-            Assert.That(cust.Zip, Is.EqualTo(34567));
-            Assert.That(cust.RewardsPoints, Is.EqualTo(23.3M));
+            TestAllCustomerPropertiesById(cust);
         }
 
         [TestCase]
@@ -72,15 +71,7 @@ namespace DotNetDataExtensionsTests
         {
             var dr = _dtTest.Select("CustomerId = 1");
             var cust = dr[0].MapTo<Customer>();
-            Assert.That(cust.FirstName, Is.EqualTo("John"));
-            Assert.That(cust.LastName, Is.EqualTo("Doe"));
-            Assert.That(cust.Email, Is.EqualTo("johnDoe@maxmail.com"));
-            Assert.That(cust.PhoneNumber, Is.EqualTo("345-231-9234"));
-            Assert.That(cust.Address, Is.EqualTo("312 Brackish Rd"));
-            Assert.That(cust.City, Is.EqualTo("Boston"));
-            Assert.That(cust.State, Is.EqualTo("MA"));
-            Assert.That(cust.Zip, Is.EqualTo(34567));
-            Assert.That(cust.RewardsPoints, Is.EqualTo(23.3M));
+            TestAllCustomerPropertiesById(cust);
         }
 
         [TestCase]
@@ -216,63 +207,6 @@ namespace DotNetDataExtensionsTests
             var dr = _dtTest.Select("CustomerId = 3");
             var cust = dr[0].MapTo<Customer>(false);
             Assert.IsNull(cust.PhoneNumber);
-        }
-
-        private static DataTable CreateDataTable()
-        {
-            Customer c;
-            var dt = new DataTable();
-
-            dt.Columns.Add(nameof(c.CustomerId), typeof(long));
-            dt.Columns.Add(nameof(c.FirstName), typeof(string));
-            dt.Columns.Add(nameof(c.LastName), typeof(string));
-            dt.Columns.Add(nameof(c.Email), typeof(string));
-            dt.Columns.Add(nameof(c.PhoneNumber), typeof(string));
-            dt.Columns.Add(nameof(c.Address), typeof(string));
-            dt.Columns.Add(nameof(c.City), typeof(string));
-            dt.Columns.Add(nameof(c.State), typeof(string));
-            dt.Columns.Add(nameof(c.Zip), typeof(int));
-            dt.Columns.Add(nameof(c.RewardsPoints), typeof(decimal));
-
-            var dr = dt.NewRow();
-            dr[nameof(c.CustomerId)] = 1;
-            dr[nameof(c.FirstName)] = "John";
-            dr[nameof(c.LastName)] = "Doe";
-            dr[nameof(c.Email)] = "johnDoe@maxmail.com";
-            dr[nameof(c.PhoneNumber)] = "345-231-9234";
-            dr[nameof(c.Address)] = "312 Brackish Rd";
-            dr[nameof(c.City)] = "Boston";
-            dr[nameof(c.State)] = "MA";
-            dr[nameof(c.Zip)] = "34567";
-            dr[nameof(c.RewardsPoints)] = 23.3M;
-            dt.Rows.Add(dr);
-
-            dr = dt.NewRow();
-            dr[nameof(c.CustomerId)] = 2;
-            dr[nameof(c.FirstName)] = "Jake";
-            dr[nameof(c.LastName)] = "McPhelson";
-            dr[nameof(c.Email)] = "Jake123@mail.com";
-            dr[nameof(c.PhoneNumber)] = DBNull.Value;
-            dr[nameof(c.Address)] = "64 Back Road Drive";
-            dr[nameof(c.City)] = "Houston";
-            dr[nameof(c.State)] = "TX";
-            dr[nameof(c.Zip)] = DBNull.Value;
-            dr[nameof(c.RewardsPoints)] = DBNull.Value;
-            dt.Rows.Add(dr);
-
-            dr = dt.NewRow();
-            dr[nameof(c.CustomerId)] = 3;
-            dr[nameof(c.FirstName)] = "Bob";
-            dr[nameof(c.LastName)] = "Jackson";
-            dr[nameof(c.Email)] = "Jake123@vixmix.com";
-            dr[nameof(c.PhoneNumber)] = DBNull.Value;
-            dr[nameof(c.Address)] = "2345 Cumberland St.";
-            dr[nameof(c.City)] = "Nashville";
-            dr[nameof(c.State)] = "TN";
-            dr[nameof(c.Zip)] = 37210;
-            dr[nameof(c.RewardsPoints)] = 0M;
-            dt.Rows.Add(dr);
-            return dt;
         }
     }
 

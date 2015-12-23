@@ -33,10 +33,7 @@ namespace DataExtensions
 
     public static class DataExtensionMethods
     {
-        internal static bool HasDefaultConstructor(this Type t)
-        {
-            return t.IsValueType || t.GetConstructor(Type.EmptyTypes) != null;
-        }
+        internal static bool HasDefaultConstructor(this Type t) => t.IsValueType || t.GetConstructor(Type.EmptyTypes) != null;
 
         private static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
@@ -64,9 +61,7 @@ namespace DataExtensions
         }
 
         public static T ConvertTo<T>(this DataRow row, string columnName)
-        {
-            return (T)Convert.ChangeType(row[columnName], typeof(T), CultureInfo.CurrentCulture);
-        }
+            => (T)Convert.ChangeType(row[columnName], typeof(T), CultureInfo.CurrentCulture);
 
         public static T ConvertTo<T>(this DataRow row, string columnName, T defaultValue)
         {
@@ -74,10 +69,8 @@ namespace DataExtensions
             return row.ConvertTo<T>(columnName);
         }
 
-        public static T MapTo<T>(this DataRow row, bool nullStringsToEmpty = true) where T : class
-        {
-            return row.MapTo(New<T>.Instance(), nullStringsToEmpty);
-        }
+        public static T MapTo<T>(this DataRow row, bool nullStringsToEmpty = true)
+            where T : class => row.MapTo(New<T>.Instance(), nullStringsToEmpty);
 
         public static T MapTo<T>(this DataRow row, T defaultEntity, bool nullStringsToEmpty = true) where T : class
         {
@@ -101,10 +94,8 @@ namespace DataExtensions
             return defaultEntity;
         }
 
-        public static List<T> MapTo<T>(this DataTable table, bool nullStringsToEmpty = true) where T : class
-        {
-            return table.MapTo(New<T>.Instance(), nullStringsToEmpty);
-        }
+        public static List<T> MapTo<T>(this DataTable table, bool nullStringsToEmpty = true)
+            where T : class => table.MapTo(New<T>.Instance(), nullStringsToEmpty);
 
         public static List<T> MapTo<T>(this DataTable table, T defaultEntity, bool nullStringsToEmpty = true) where T : class
         {
@@ -118,10 +109,8 @@ namespace DataExtensions
             return entityList;
         }
 
-        public static List<T> MapTo<T>(this IDataReader reader, bool nullStringsToEmpty = true) where T : class
-        {
-            return reader.MapTo(New<T>.Instance(), nullStringsToEmpty);
-        }
+        public static List<T> MapTo<T>(this IDataReader reader, bool nullStringsToEmpty = true)
+            where T : class => reader.MapTo(New<T>.Instance(), nullStringsToEmpty);
 
         public static List<T> MapTo<T>(this IDataReader reader, T defaultEntity, bool nullStringsToEmpty = true) where T : class
         {
