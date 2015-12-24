@@ -249,8 +249,8 @@ namespace DotNetDataExtensionsTests
         public void ConvertTo_DoesDbNullStringOverrideToNull()
         {
             var dr = _dtTest.Select($"{nameof(_customer.Id)} = 2");
-            var phoneNumber = dr[0].ConvertTo<string>(nameof(_customer.PhoneNumber), null);
-            Assert.IsNull(phoneNumber);
+            var phone = dr[0].ConvertTo<string>(nameof(_customer.PhoneNumber), null);
+            Assert.IsNull(phone);
         }
     }
 }
