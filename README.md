@@ -75,7 +75,7 @@ var customerList = row.MapTo(new Customer { FirstName="Please",
 
 ## ConvertTo Extension Method
 
-**Description:** This extends DataRow and will convert a column's value to the .Net type specified. One can also pass a default value to return if the column is DBNull. Unlike MapTo, in this extension, a DBNull for a string will return null.
+**Description:** This extends DataRow and will convert a column's value to the .Net type specified. One can also pass a default value to return if the column is DBNull. This extension will turn an empty string if the database string value is DBNull.
 
 **Examples:**
 
@@ -90,7 +90,7 @@ or
 var customerId = row.ConvertTo("CustomerId", 0);
 ```
 
-### Dependancies:
+### Dependencies:
 
 These DataExtensions depend on the NuGet package *FastMember*. 
 
