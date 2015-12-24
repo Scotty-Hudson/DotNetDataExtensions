@@ -7,7 +7,7 @@
           <xs:element name="Customer">
             <xs:complexType>
               <xs:sequence>
-                <xs:element name="CustomerId" type="xs:long" minOccurs="0" />
+                <xs:element name="Id" type="xs:long" minOccurs="0" />
                 <xs:element name="FirstName" type="xs:string" minOccurs="0" />
                 <xs:element name="LastName" type="xs:string" minOccurs="0" />
                 <xs:element name="Email" type="xs:string" minOccurs="0" />
@@ -26,7 +26,7 @@
     </xs:element>
   </xs:schema>
   <Customer>
-    <CustomerId>1</CustomerId>
+    <Id>1</Id>
     <FirstName>John</FirstName>
     <LastName>Doe</LastName>
     <Email>johnDoe@maxmail.com</Email>
@@ -39,7 +39,8 @@
     <ExtraField>3.9</ExtraField>
   </Customer>
   <Customer>
-    <CustomerId>2</CustomerId>
+    <!--This record is missing PhoneNumber, Zip, and RewardsPoints for test purposes-->
+    <Id>2</Id>
     <FirstName>Jake</FirstName>
     <LastName>McPhelson</LastName>
     <Email>Jake123@mail.com</Email>
@@ -48,11 +49,12 @@
     <State>TX</State>
   </Customer>
   <Customer>
-    <CustomerId>3</CustomerId>
+    <!--This record is missing PhoneNumber for test purposes-->
+    <Id>3</Id>
     <FirstName>Bob</FirstName>
     <LastName>Jackson</LastName>
-    <Email>Jake123@vixmix,com</Email>
-    <Address>2345 Cumberland St,</Address>
+    <Email>Bob123@vixmix.com</Email>
+    <Address>2345 Cumberland St.</Address>
     <City>Nashville</City>
     <State>TN</State>
     <ZIP>37210</ZIP>
