@@ -244,5 +244,13 @@ namespace DotNetDataExtensionsTests
             var firstName = dr[0].ConvertTo<string>(nameof(_customer.FirstName));
             Assert.That(firstName, Is.EqualTo(dr[0][nameof(_customer.FirstName)]));
         }
+
+        [TestCase]
+        public void ConvertTo_DoesDbNullStringOverrideToNull()
+        {
+            var dr = _dtTest.Select($"{nameof(_customer.Id)} = 2");
+            var phoneNumber = dr[0].ConvertTo<string>(nameof(_customer.PhoneNumber), null);
+            Assert.IsNull(phoneNumber);
+        }
     }
 }
