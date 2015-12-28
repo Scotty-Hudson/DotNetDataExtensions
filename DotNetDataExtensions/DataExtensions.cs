@@ -58,7 +58,7 @@ namespace DataExtensions
             accessor.GetMembers()
                     .Where(p => p.Type == typeof(string))
                     .Where(p => accessor[poco, p.Name] == null)
-                    .ForEach(prop => accessor[poco, prop.Name] = string.Empty);
+                    .ForEach(p => accessor[poco, p.Name] = string.Empty);
             return poco;
         }
 
