@@ -34,7 +34,7 @@
     <Address>312 Brackish Rd</Address>
     <City>Boston</City>
     <State>MA</State>
-    <ZIP>34567</ZIP>
+    <ZIP>34567</ZIP> <!-- Made this field uppercase to test case insensitivity for mappings -->
     <RewardsPoints>23.3</RewardsPoints>
     <ExtraField>3.9</ExtraField>
   </Customer>
